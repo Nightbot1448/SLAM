@@ -101,6 +101,34 @@ public: // methods
     return s.result();
   }
 
+    void save_state_() const {
+       auto w = width(), h = height();
+       size_t map_size_bytes = w * h * _unknown_cell->serialize().size() * sizeof(char);
+
+       Serializer s(sizeof(GridMapParams) + sizeof(Coord) + map_size_bytes);
+       s << h << w << scale() << origin().x << origin().y;
+
+       Serializer ms(map_size_bytes);
+       for (auto &row : _cells) {
+           for (auto &cell : row) {
+               ms.append(cell->serialize());
+           }
+       }
+#ifdef COMPRESSED_SERIALIZATION
+       s.append(ms.compressed());
+#else
+       s.append(ms.result());
+#endif
+       ROS_INFO("save state new");
+       static size_t _id = 0;
+       static std::string _base_fname = "/home/dmo/Documents/dimplom/dumps/test_dump_";
+       std::ofstream dst = std::ofstream{_base_fname + std::to_string(_id) + ".txt", std::ios::out};
+       std::vector<char> result = s.result();
+       dst.write(result.data(), result.size() * sizeof(*(result.data())));
+       dst.close();
+      _id++;
+    }
+
   void load_state(const std::vector<char>& data) override {
     decltype(width()) w, h;
     decltype(scale()) s;
