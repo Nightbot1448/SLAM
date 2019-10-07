@@ -10,6 +10,10 @@ class VinyDSCell : public GridCell {
 public:
   VinyDSCell(): GridCell{Occupancy{0.5, 1}} {}
   VinyDSCell(double prob): GridCell{Occupancy{prob, 1}} {}
+  VinyDSCell(const VinyDSCell& gc) = default;
+  VinyDSCell& operator=(const VinyDSCell& gc) = default;
+  VinyDSCell(VinyDSCell&& gc) = default;
+  VinyDSCell& operator=(VinyDSCell&& gc) = default;
 
   std::unique_ptr<GridCell> clone() const override {
     return std::make_unique<VinyDSCell>(*this);
@@ -54,6 +58,10 @@ public:
     d >> u >> e >> o >> c;
     _belief = TBM(u, e, o, c);
     return d.pos();
+  }
+
+  std::unique_ptr<VinyDSCell> cloneViny() const {
+       return std::make_unique<VinyDSCell>(*this);
   }
 
   const TBM& belief() const { return _belief; }

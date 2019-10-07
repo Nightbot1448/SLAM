@@ -20,6 +20,7 @@ public: // method
     if ((ros::Time::now() - _last_pub_time) < _publishing_interval) {
       return;
     }
+    map.save_state();
 
     nav_msgs::OccupancyGrid map_msg;
     map_msg.header.frame_id = _tf_map_frame_id;

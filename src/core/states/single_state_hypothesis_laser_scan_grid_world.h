@@ -7,7 +7,7 @@
 #include "../maps/grid_map.h"
 #include "../maps/grid_map_scan_adders.h"
 #include "../scan_matchers/grid_scan_matcher.h"
-
+#include "../../core/maps/grid_map.h"
 #include "laser_scan_grid_world.h"
 
 struct SingleStateHypothesisLSGWProperties {
@@ -15,7 +15,7 @@ struct SingleStateHypothesisLSGWProperties {
   double raw_scan_quality = 1.0;
   std::size_t scan_margin = 0;
 
-  std::shared_ptr<GridCell> cell_prototype;
+  std::shared_ptr<GridCellT> cell_prototype;
   std::shared_ptr<GridScanMatcher> gsm;
   std::shared_ptr<GridMapScanAdder> gmsa;
   GridMapParams map_props;
@@ -30,7 +30,8 @@ public:
 public:
   SingleStateHypothesisLaserScanGridWorld(const Properties &props)
     : _props{props}
-    , _map{_props.cell_prototype->clone(), _props.map_props} {}
+//    , _map{_props.cell_prototype->clone(), _props.map_props} {}
+      , _map{_props.cell_prototype->cloneViny(), _props.map_props} {}
 
   // scan matcher access
   auto scan_matcher() { return _props.gsm; }

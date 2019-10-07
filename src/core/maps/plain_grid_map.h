@@ -7,18 +7,24 @@
 #include <cassert>
 #include <algorithm>
 
+#include <typeinfo>
+#include <iostream>
+
 #include "grid_map.h"
+//#include "../../slams/viny/viny_grid_cell.h"
+
+
 
 class PlainGridMap : public GridMap {
 public:
   // TODO: cp, mv ctors, dtor
-  PlainGridMap(std::shared_ptr<GridCell> prototype,
+  PlainGridMap(std::shared_ptr<GridCellT> prototype,
                const GridMapParams& params = MapValues::gmp)
     : GridMap{prototype, params}, _cells(GridMap::height()) {
     for (auto &row : _cells) {
       row.reserve(GridMap::width());
       for (int i = 0; i < GridMap::width(); i++) {
-        row.push_back(prototype->clone());
+        row.push_back(prototype->cloneViny());
       }
     }
   }
@@ -35,7 +41,7 @@ protected: // fields
     return *_cells[ic.y][ic.x];
   }
 
-  std::vector<std::vector<std::unique_ptr<GridCell>>> _cells;
+  std::vector<std::vector<std::unique_ptr<GridCellT>>> _cells;
 };
 
 /* Unbounded implementation */
@@ -44,10 +50,10 @@ class UnboundedPlainGridMap : public PlainGridMap {
 private: // fields
   static constexpr double Expansion_Rate = 1.2;
 public: // methods
-  UnboundedPlainGridMap(std::shared_ptr<GridCell> prototype,
+  UnboundedPlainGridMap(std::shared_ptr<GridCellT> prototype,
                         const GridMapParams &params = MapValues::gmp)
     : PlainGridMap{prototype, params}
-    , _origin{GridMap::origin()}, _unknown_cell{prototype->clone()} {}
+    , _origin{GridMap::origin()}, _unknown_cell{prototype->cloneViny()} {}
 
   void update(const Coord &area_id,
               const AreaOccupancyObservation &aoo) override {
@@ -55,10 +61,10 @@ public: // methods
     PlainGridMap::update(area_id, aoo);
   }
 
-  void reset(const Coord &area_id, const GridCell &new_area) override {
+  void reset(const Coord &area_id, const GridCellT &new_area) {
     ensure_inside(area_id);
     auto ic = external2internal(area_id);
-    _cells[ic.y][ic.x].reset(new_area.clone().release());
+    _cells[ic.y][ic.x].reset(new_area.cloneViny().release());
     //PlainGridMap::reset(area_id, new_area);
   }
 
@@ -75,6 +81,8 @@ public: // methods
   std::vector<char> save_state() const override {
     auto w = width(), h = height();
     size_t map_size_bytes = w * h * _unknown_cell->serialize().size();
+
+
 
     Serializer s(sizeof(GridMapParams) + sizeof(Coord) + map_size_bytes);
     s << h << w << scale() << origin().x << origin().y;
@@ -149,10 +157,10 @@ protected: // methods
     #undef UPDATE_DIM
 
     // PERFORMANCE: _cells can be reused
-    std::vector<std::vector<std::unique_ptr<GridCell>>> new_cells{new_h};
+    std::vector<std::vector<std::unique_ptr<GridCellT>>> new_cells{new_h};
     for (size_t y = 0; y != new_h; ++y) {
-      std::generate_n(std::back_inserter(new_cells[y]), new_w,
-                      [this](){ return this->_unknown_cell->clone(); });
+//        std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->clone(); });
+      std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->cloneViny(); });
       if (y < prep_y || prep_y + h <= y) { continue; }
 
       std::move(_cells[y - prep_y].begin(), _cells[y - prep_y].end(),
@@ -182,7 +190,7 @@ protected: // methods
 
 private: // fields
   Coord _origin;
-  std::shared_ptr<GridCell> _unknown_cell;
+  std::shared_ptr<GridCellT> _unknown_cell;
 };
 
 #endif
