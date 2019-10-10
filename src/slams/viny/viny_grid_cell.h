@@ -60,10 +60,6 @@ public:
     return d.pos();
   }
 
-  std::unique_ptr<VinyDSCell> cloneViny() const {
-       return std::make_unique<VinyDSCell>(*this);
-  }
-
   const TBM& belief() const { return _belief; }
 private:
   TBM _belief;

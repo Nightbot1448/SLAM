@@ -24,7 +24,7 @@ public:
     for (auto &row : _cells) {
       row.reserve(GridMap::width());
       for (int i = 0; i < GridMap::width(); i++) {
-        row.push_back(prototype->cloneViny());
+          row.push_back(prototype->clone());
       }
     }
   }
@@ -53,8 +53,7 @@ public: // methods
   UnboundedPlainGridMap(std::shared_ptr<GridCellT> prototype,
                         const GridMapParams &params = MapValues::gmp)
     : PlainGridMap{prototype, params}
-    , _origin{GridMap::origin()}, _unknown_cell{prototype->cloneViny()} {}
-
+      , _origin{GridMap::origin()}, _unknown_cell{prototype->clone()} {}
   void update(const Coord &area_id,
               const AreaOccupancyObservation &aoo) override {
     ensure_inside(area_id);
@@ -64,7 +63,7 @@ public: // methods
   void reset(const Coord &area_id, const GridCellT &new_area) {
     ensure_inside(area_id);
     auto ic = external2internal(area_id);
-    _cells[ic.y][ic.x].reset(new_area.cloneViny().release());
+      _cells[ic.y][ic.x].reset(new_area.clone().release());
     //PlainGridMap::reset(area_id, new_area);
   }
 
@@ -188,7 +187,7 @@ protected: // methods
     std::vector<std::vector<std::unique_ptr<GridCellT>>> new_cells{new_h};
     for (size_t y = 0; y != new_h; ++y) {
 //        std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->clone(); });
-      std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->cloneViny(); });
+        std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->clone(); });
       if (y < prep_y || prep_y + h <= y) { continue; }
 
       std::move(_cells[y - prep_y].begin(), _cells[y - prep_y].end(),

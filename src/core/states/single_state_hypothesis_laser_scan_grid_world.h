@@ -30,8 +30,7 @@ public:
 public:
   SingleStateHypothesisLaserScanGridWorld(const Properties &props)
     : _props{props}
-//    , _map{_props.cell_prototype->clone(), _props.map_props} {}
-      , _map{_props.cell_prototype->cloneViny(), _props.map_props} {}
+    , _map{_props.cell_prototype->clone(), _props.map_props} {}
 
   // scan matcher access
   auto scan_matcher() { return _props.gsm; }

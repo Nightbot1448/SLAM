@@ -8,8 +8,8 @@
 #include "grid_cell.h"
 #include "../../slams/viny/viny_grid_cell.h"
 
-using GridCellT = VinyDSCell;
-//using GridCellT = GridCell;
+//using GridCellT = VinyDSCell;
+using GridCellT = GridCell;
 
 struct GridMapParams {
   int width_cells, height_cells;
@@ -36,7 +36,7 @@ public:
 //    return _cell_prototype->clone();
 //  }
     std::unique_ptr<GridCellT> new_cell() const {
-        return _cell_prototype->cloneViny();
+        return _cell_prototype->clone();
     }
 
   /* == OccupancyMap API == */
