@@ -53,6 +53,7 @@ public:
 
   std::size_t deserialize(const std::vector<char>& data,
                           std::size_t pos = 0) override {
+//      ROS_INFO("viny deserialize");
     Deserializer d(data, GridCell::deserialize(data, pos));
     double u, e, o, c;
     d >> u >> e >> o >> c;

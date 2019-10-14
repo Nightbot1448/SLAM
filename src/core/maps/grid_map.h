@@ -8,9 +8,6 @@
 #include "grid_cell.h"
 #include "../../slams/viny/viny_grid_cell.h"
 
-//using GridCellT = VinyDSCell;
-using GridCellT = GridCell;
-
 struct GridMapParams {
   int width_cells, height_cells;
   double meters_per_cell;
@@ -26,16 +23,13 @@ struct MapValues {
 class GridMap : public OccupancyMap<RegularSquaresGrid::Coord, double>
               , public RegularSquaresGrid {
 public:
-  GridMap(std::shared_ptr<GridCellT> prototype,
+  GridMap(std::shared_ptr<GridCell> prototype,
           const GridMapParams& params = MapValues::gmp)
     : RegularSquaresGrid{params.width_cells, params.height_cells,
                          params.meters_per_cell}
     , _cell_prototype{prototype} {}
 
-//  std::unique_ptr<GridCellT> new_cell() const {
-//    return _cell_prototype->clone();
-//  }
-    std::unique_ptr<GridCellT> new_cell() const {
+    std::unique_ptr<GridCell> new_cell() const {
         return _cell_prototype->clone();
     }
 
@@ -73,9 +67,9 @@ public:
 
 protected:
 
-  std::shared_ptr<GridCellT> cell_prototype() const { return _cell_prototype; }
+  std::shared_ptr<GridCell> cell_prototype() const { return _cell_prototype; }
 private: // fields
-  std::shared_ptr<GridCellT> _cell_prototype;
+  std::shared_ptr<GridCell> _cell_prototype;
 };
 
 #endif

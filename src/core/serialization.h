@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <iostream>
 
+#define COMPRESSED_SERIALIZATION 1;
+
 #ifdef COMPRESSED_SERIALIZATION
 #include "roslz4/lz4s.h"
 #endif

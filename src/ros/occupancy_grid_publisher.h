@@ -5,6 +5,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 
 #include "../core/states/state_data.h"
+#include "../core/states/world.h"
 #include "../core/maps/grid_map.h"
 
 template <typename GridMapType>
@@ -20,7 +21,10 @@ public: // method
     if ((ros::Time::now() - _last_pub_time) < _publishing_interval) {
       return;
     }
-    map.save_state_();
+    static size_t count_of_pub = 0;
+    ++count_of_pub;
+    if (!(count_of_pub % 5))
+        map.save_state_to_file();
 
     nav_msgs::OccupancyGrid map_msg;
     map_msg.header.frame_id = _tf_map_frame_id;

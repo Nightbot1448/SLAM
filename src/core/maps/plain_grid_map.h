@@ -18,7 +18,7 @@
 class PlainGridMap : public GridMap {
 public:
   // TODO: cp, mv ctors, dtor
-  PlainGridMap(std::shared_ptr<GridCellT> prototype,
+  PlainGridMap(std::shared_ptr<GridCell> prototype,
                const GridMapParams& params = MapValues::gmp)
     : GridMap{prototype, params}, _cells(GridMap::height()) {
     for (auto &row : _cells) {
@@ -41,7 +41,7 @@ protected: // fields
     return *_cells[ic.y][ic.x];
   }
 
-  std::vector<std::vector<std::unique_ptr<GridCellT>>> _cells;
+  std::vector<std::vector<std::unique_ptr<GridCell>>> _cells;
 };
 
 /* Unbounded implementation */
@@ -50,7 +50,7 @@ class UnboundedPlainGridMap : public PlainGridMap {
 private: // fields
   static constexpr double Expansion_Rate = 1.2;
 public: // methods
-  UnboundedPlainGridMap(std::shared_ptr<GridCellT> prototype,
+  UnboundedPlainGridMap(std::shared_ptr<GridCell> prototype,
                         const GridMapParams &params = MapValues::gmp)
     : PlainGridMap{prototype, params}
       , _origin{GridMap::origin()}, _unknown_cell{prototype->clone()} {}
@@ -60,7 +60,7 @@ public: // methods
     PlainGridMap::update(area_id, aoo);
   }
 
-  void reset(const Coord &area_id, const GridCellT &new_area) {
+  void reset(const Coord &area_id, const GridCell &new_area) {
     ensure_inside(area_id);
     auto ic = external2internal(area_id);
       _cells[ic.y][ic.x].reset(new_area.clone().release());
@@ -81,8 +81,6 @@ public: // methods
     auto w = width(), h = height();
     size_t map_size_bytes = w * h * _unknown_cell->serialize().size();
 
-
-
     Serializer s(sizeof(GridMapParams) + sizeof(Coord) + map_size_bytes);
     s << h << w << scale() << origin().x << origin().y;
 
@@ -100,7 +98,7 @@ public: // methods
     return s.result();
   }
 
-    void save_state_() const {
+  void save_state_to_file(const std::string& _base_fname = "/home/dmo/Documents/dimplom/dumps/full_dump_") const {
        auto w = width(), h = height();
        size_t map_size_bytes = w * h * _unknown_cell->serialize().size() * sizeof(char);
 
@@ -114,13 +112,13 @@ public: // methods
            }
        }
 #ifdef COMPRESSED_SERIALIZATION
-       s.append(ms.compressed());
+       auto tmp = ms.compressed();
+       s.append(tmp);
 #else
        s.append(ms.result());
 #endif
-       ROS_INFO("save state new");
        static size_t _id = 0;
-       static std::string _base_fname = "/home/dmo/Documents/dimplom/dumps/test_dump_";
+        ROS_INFO("save %lu dump", _id);
        std::ofstream dst = std::ofstream{_base_fname + std::to_string(_id) + ".txt", std::ios::out};
        std::vector<char> result = s.result();
        dst.write(result.data(), result.size() * sizeof(*(result.data())));
@@ -139,10 +137,12 @@ public: // methods
     set_height(h);
     set_scale(s);
   #ifdef COMPRESSED_SERIALIZATION
+    ROS_INFO("start decompress");
     std::vector<char> map_data = Deserializer::decompress(
         data.data() + d.pos(), data.size() - d.pos(),
         w * h * _unknown_cell->serialize().size());
     size_t pos = 0;
+    ROS_INFO("finish decompress");
   #else
     const std::vector<char> &map_data = data;
     size_t pos = d.pos();
@@ -184,7 +184,7 @@ protected: // methods
     #undef UPDATE_DIM
 
     // PERFORMANCE: _cells can be reused
-    std::vector<std::vector<std::unique_ptr<GridCellT>>> new_cells{new_h};
+    std::vector<std::vector<std::unique_ptr<GridCell>>> new_cells{new_h};
     for (size_t y = 0; y != new_h; ++y) {
 //        std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->clone(); });
         std::generate_n(std::back_inserter(new_cells[y]), new_w, [this](){ return this->_unknown_cell->clone(); });
@@ -217,7 +217,7 @@ protected: // methods
 
 private: // fields
   Coord _origin;
-  std::shared_ptr<GridCellT> _unknown_cell;
+  std::shared_ptr<GridCell> _unknown_cell;
 };
 
 #endif

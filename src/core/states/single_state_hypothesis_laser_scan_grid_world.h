@@ -15,7 +15,7 @@ struct SingleStateHypothesisLSGWProperties {
   double raw_scan_quality = 1.0;
   std::size_t scan_margin = 0;
 
-  std::shared_ptr<GridCellT> cell_prototype;
+  std::shared_ptr<GridCell> cell_prototype;
   std::shared_ptr<GridScanMatcher> gsm;
   std::shared_ptr<GridMapScanAdder> gmsa;
   GridMapParams map_props;

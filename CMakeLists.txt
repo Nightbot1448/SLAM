@@ -27,6 +27,8 @@ include_directories(
 
 catkin_package()
 
+
+add_executable(load_map_ff src/load_map_ff.cpp)
 add_executable(wg_pr2_bag_adapter src/ros/wg_pr2_bag_adapter.cpp)
 add_executable(lslam2D_bag_runner src/ros/lslam2D_bag_runner.cpp)
 add_executable(gmapping src/slams/gmapping/gmapping.cpp)
@@ -38,6 +40,8 @@ add_executable(credibilist_slam src/slams/credibilist/slam.cpp)
 add_executable(path_publisher src/ros/path_publisher.cpp)
 add_executable(p2D_ss_evaluator src/utils/pose2D_search_space_evaluator.cpp)
 
+
+target_link_libraries(load_map_ff ${catkin_LIBRARIES})
 target_link_libraries(wg_pr2_bag_adapter ${catkin_LIBRARIES})
 target_link_libraries(lslam2D_bag_runner ${catkin_LIBRARIES})
 target_link_libraries(gmapping ${catkin_LIBRARIES})
@@ -49,7 +53,7 @@ target_link_libraries(credibilist_slam ${catkin_LIBRARIES})
 target_link_libraries(path_publisher ${catkin_LIBRARIES})
 
 install(
-  TARGETS wg_pr2_bag_adapter lslam2D_bag_runner gmapping tiny_slam viny_slam credibilist_slam path_publisher
+  TARGETS wg_pr2_bag_adapter lslam2D_bag_runner gmapping tiny_slam viny_slam credibilist_slam path_publisher load_map_ff
 #  TARGETS wg_pr2_bag_adapter lslam2D_bag_runner gmapping tiny_slam viny_slam path_publisher
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
