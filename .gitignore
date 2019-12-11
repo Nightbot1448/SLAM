@@ -1,3 +1,6 @@
 .idea
 cmake-build-debug
 docs/doxygen
+.vscode
+rviz/debug0.rviz
+rviz/debug1.rviz

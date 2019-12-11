@@ -60,6 +60,12 @@ public: // methods
     PlainGridMap::update(area_id, aoo);
   }
 
+  void setCell(const Coord &area_id, const GridCell &cell){
+    ensure_inside(area_id);
+    auto ic = external2internal(area_id);
+    *(_cells[ic.y][ic.x]) = cell;
+  }
+
   void reset(const Coord &area_id, const GridCell &new_area) {
     ensure_inside(area_id);
     auto ic = external2internal(area_id);
@@ -161,6 +167,7 @@ public: // methods
 
 protected: // methods
 
+  // КАКОГО ТУТ ПРОИСХОДИТ
   bool ensure_inside(const Coord &c) {
     auto coord = external2internal(c);
     if (PlainGridMap::has_internal_cell(coord)) return false;

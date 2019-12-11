@@ -10,6 +10,7 @@ class VinyDSCell : public GridCell {
 public:
   VinyDSCell(): GridCell{Occupancy{0.5, 1}} {}
   VinyDSCell(double prob): GridCell{Occupancy{prob, 1}} {}
+  VinyDSCell(double prob, const TBM &bel): GridCell{Occupancy{prob, 1}}, _belief(bel) {}
   VinyDSCell(const VinyDSCell& gc) = default;
   VinyDSCell& operator=(const VinyDSCell& gc) = default;
   VinyDSCell(VinyDSCell&& gc) = default;
@@ -53,7 +54,6 @@ public:
 
   std::size_t deserialize(const std::vector<char>& data,
                           std::size_t pos = 0) override {
-//      ROS_INFO("viny deserialize");
     Deserializer d(data, GridCell::deserialize(data, pos));
     double u, e, o, c;
     d >> u >> e >> o >> c;

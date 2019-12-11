@@ -43,7 +43,12 @@ public:
   void normalize();
   void normalize_conflict();
 
+
   // friend functions
+  friend std::ostream &operator<<(std::ostream &op, const TBM &tbm){
+    op << '{' << tbm._beliefs[UNKNOWN] << ',' << tbm._beliefs[EMPTY] << ',' << tbm._beliefs[OCCUPIED] << ',' << tbm._beliefs[CONFLICT] << '}';
+    return op;
+  }
   friend TBM conjunctive(const TBM& lhs, const TBM& rhs);
   friend TBM disjunctive(const TBM& lhs, const TBM& rhs);
 };
@@ -51,6 +56,9 @@ public:
 
 /*------------------ definition ---------------------*/
 
+// std::ostream &TBM::operator<<(std::ostream &ostream, const TBM &tbm) {
+//   ostream << '{' << tbm._beliefs[UNKNOWN] << ',' << tbm._beliefs[EMPTY] << ',' << tbm._beliefs[OCCUPIED] << ',' << tbm._beliefs[CONFLICT] << '}';
+// }
 
 void TBM::set(Belief belief, double value) {
   assert(belief != MAX_BELIEF);
